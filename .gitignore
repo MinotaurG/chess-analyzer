@@ -1,0 +1,22 @@
+# Rust compiled files
+/target/
+
+# Cargo.lock for binaries (we keep it, but some prefer to ignore)
+# We'll keep it since this is an application, not a library
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.local
+
+# Debug files
+*.log

@@ -1,7 +1,7 @@
 use chess_analyzer::analyze_position;
 use chess_analyzer::engine::StockfishEngine;
 use chess_analyzer::parser::parse_pgn_file;
-use shakmaty::{fen::Fen, san::San, uci::Uci, Chess, Position};
+use shakmaty::{fen::Fen, san::San, Chess, Move, Position, Role, Square, File};
 use std::env;
 use std::process;
 
@@ -66,7 +66,6 @@ fn test_engine() {
             println!("[OK] Stockfish started successfully!");
             println!();
 
-            // Analyze starting position
             println!("Analyzing starting position (depth 12)...");
             engine.set_position(None, None).unwrap();
 
@@ -85,7 +84,6 @@ fn test_engine() {
                 }
             }
 
-            // Test a tactical position
             println!();
             println!("Analyzing tactical position...");
             let tactical_fen = "r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4";
@@ -119,7 +117,6 @@ fn eval_position(fen: &str) {
     println!("   FEN: {}", fen);
     println!();
 
-    // Parse FEN to validate it
     let parsed_fen: Result<Fen, _> = fen.parse();
     if let Err(e) = parsed_fen {
         println!("[ERROR] Invalid FEN: {}", e);
@@ -154,7 +151,6 @@ fn analyze_games(file_path: &str) {
     println!("Loading: {}", file_path);
     println!();
 
-    // Parse PGN
     let games = match parse_pgn_file(file_path) {
         Ok(g) => g,
         Err(e) => {
@@ -166,7 +162,6 @@ fn analyze_games(file_path: &str) {
     println!("[OK] Found {} game(s)", games.len());
     println!();
 
-    // Start engine
     let mut engine = match StockfishEngine::new("stockfish") {
         Ok(e) => {
             println!("[OK] Stockfish engine ready");
@@ -178,7 +173,6 @@ fn analyze_games(file_path: &str) {
             println!("   Continuing without engine analysis...");
             println!();
 
-            // Show basic info without engine
             for (index, game) in games.iter().enumerate() {
                 println!("----------------------------------------");
                 println!("Game {}: {}", index + 1, game.summary());
@@ -190,7 +184,6 @@ fn analyze_games(file_path: &str) {
         }
     };
 
-    // Analyze each game
     for (index, game) in games.iter().enumerate() {
         println!("================================================================");
         println!("Game {}: {}", index + 1, game.summary());
@@ -208,19 +201,15 @@ fn analyze_games(file_path: &str) {
         println!("   Moves: {}", game.move_count());
         println!();
 
-        // Convert all moves to UCI once
         let uci_moves = convert_san_to_uci(&game.moves);
 
-        // Analyze key positions in the game
         println!("   Position Analysis:");
 
-        // Starting position
         engine.set_position(None, None).unwrap();
         if let Ok(analysis) = engine.analyze(12) {
             println!("      Start: {} ({})", analysis.evaluation, analysis.best_move);
         }
 
-        // Position after opening (move 10 = 20 half-moves)
         if uci_moves.len() >= 20 {
             let opening_moves: Vec<String> = uci_moves[..20].to_vec();
             engine.set_position(None, Some(&opening_moves)).unwrap();
@@ -229,7 +218,6 @@ fn analyze_games(file_path: &str) {
             }
         }
 
-        // Final position
         if !uci_moves.is_empty() {
             engine.set_position(None, Some(&uci_moves)).unwrap();
             if let Ok(analysis) = engine.analyze(12) {
@@ -241,6 +229,35 @@ fn analyze_games(file_path: &str) {
     }
 
     println!("[OK] Analysis complete!");
+}
+
+/// Converts a shakmaty Move to UCI string format
+fn move_to_uci(mv: &Move) -> String {
+    match mv {
+        Move::Normal { from, to, promotion, .. } => {
+            let promo = promotion.map(|r| match r {
+                Role::Queen => "q",
+                Role::Rook => "r",
+                Role::Bishop => "b",
+                Role::Knight => "n",
+                _ => "",
+            }).unwrap_or("");
+            format!("{}{}{}", from, to, promo)
+        }
+        Move::EnPassant { from, to, .. } => format!("{}{}", from, to),
+        Move::Castle { king, rook } => {
+            // UCI uses king's start and end squares for castling
+            let king_dest = if rook.file() > king.file() {
+                // Kingside: king goes to g-file
+                Square::from_coords(File::G, king.rank())
+            } else {
+                // Queenside: king goes to c-file
+                Square::from_coords(File::C, king.rank())
+            };
+            format!("{}{}", king, king_dest)
+        }
+        Move::Put { .. } => String::new(),
+    }
 }
 
 /// Converts SAN moves to UCI format by replaying through positions
@@ -257,9 +274,9 @@ fn convert_san_to_uci(san_moves: &[String]) -> Vec<String> {
             break;
         };
 
-        uci_moves.push(Uci::from_standard(&mv).to_string());
+        uci_moves.push(move_to_uci(&mv));
 
-        let Ok(new_pos) = position.play(&mv) else {
+        let Ok(new_pos) = position.play(mv) else {
             break;
         };
         position = new_pos;

@@ -10,51 +10,23 @@ use std::path::Path;
 /// Represents a parsed chess game
 #[derive(Debug, Clone)]
 pub struct PgnGame {
-    /// Event name (tournament, casual, etc.)
     pub event: Option<String>,
-    /// Location of the game
     pub site: Option<String>,
-    /// Date played
     pub date: Option<String>,
-    /// White player's name
     pub white: Option<String>,
-    /// Black player's name
     pub black: Option<String>,
-    /// Game result ("1-0", "0-1", "1/2-1/2", "*")
     pub result: Option<String>,
-    /// White player's rating
     pub white_elo: Option<u16>,
-    /// Black player's rating
     pub black_elo: Option<u16>,
-    /// List of moves in SAN notation
     pub moves: Vec<String>,
-    /// Final position after all moves
     pub final_position: Chess,
 }
 
 impl PgnGame {
-    /// Creates a new empty PgnGame
-    fn new() -> Self {
-        PgnGame {
-            event: None,
-            site: None,
-            date: None,
-            white: None,
-            black: None,
-            result: None,
-            white_elo: None,
-            black_elo: None,
-            moves: Vec::new(),
-            final_position: Chess::default(),
-        }
-    }
-
-    /// Returns the number of moves (half-moves/ply)
     pub fn move_count(&self) -> usize {
         self.moves.len()
     }
 
-    /// Returns a display-friendly summary
     pub fn summary(&self) -> String {
         let white = self.white.as_deref().unwrap_or("Unknown");
         let black = self.black.as_deref().unwrap_or("Unknown");
@@ -63,7 +35,6 @@ impl PgnGame {
     }
 }
 
-/// Holds state while parsing the tags (headers) section
 #[derive(Default)]
 struct GameTags {
     event: Option<String>,
@@ -76,7 +47,6 @@ struct GameTags {
     black_elo: Option<u16>,
 }
 
-/// Holds state while parsing the movetext section
 struct GameMoves {
     tags: GameTags,
     moves: Vec<String>,
@@ -84,7 +54,6 @@ struct GameMoves {
     success: bool,
 }
 
-/// Visitor implementation for parsing PGN
 struct GameParser;
 
 impl Visitor for GameParser {
@@ -182,7 +151,6 @@ impl Visitor for GameParser {
     }
 }
 
-/// Error type for PGN parsing operations
 #[derive(Debug)]
 pub enum PgnError {
     FileError(io::Error),
@@ -206,37 +174,27 @@ impl From<io::Error> for PgnError {
     }
 }
 
-/// Parses a PGN file and returns all games found
 pub fn parse_pgn_file<P: AsRef<Path>>(path: P) -> Result<Vec<PgnGame>, PgnError> {
     let contents = fs::read_to_string(path)?;
     parse_pgn_string(&contents)
 }
 
-/// Parses PGN from a string
 pub fn parse_pgn_string(pgn: &str) -> Result<Vec<PgnGame>, PgnError> {
     let mut parser = GameParser;
     let mut games: Vec<PgnGame> = Vec::new();
 
-    // Cursor wraps bytes and implements Read trait
     let cursor = Cursor::new(pgn.as_bytes());
     let mut reader = pgn_reader::Reader::new(cursor);
 
-    // Read games until none left
     loop {
         match reader.read_game(&mut parser) {
             Ok(Some(maybe_game)) => {
-                // maybe_game is Option<PgnGame> (our Output type)
                 if let Some(game) = maybe_game {
                     games.push(game);
                 }
             }
-            Ok(None) => {
-                // No more games
-                break;
-            }
-            Err(e) => {
-                return Err(PgnError::ParseError(e.to_string()));
-            }
+            Ok(None) => break,
+            Err(e) => return Err(PgnError::ParseError(e.to_string())),
         }
     }
 
@@ -263,7 +221,6 @@ mod tests {
     #[test]
     fn test_parse_pgn_string() {
         let games = parse_pgn_string(SAMPLE_PGN).unwrap();
-
         assert_eq!(games.len(), 1);
 
         let game = &games[0];
@@ -284,7 +241,6 @@ mod tests {
     fn test_position_tracking() {
         let games = parse_pgn_string(SAMPLE_PGN).unwrap();
         let game = &games[0];
-
         assert_eq!(game.final_position.turn(), Color::Black);
         assert_eq!(game.final_position.board().occupied().count(), 32);
     }

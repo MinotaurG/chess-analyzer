@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "project": {
+    "name": "chess-analyzer",
+    "description": null,
+    "status": "Active",
+    "language": "Rust",
+    "created": "2026-01-15T06:25:57.497394202Z"
+  },
+  "logs": [
+    {
+      "timestamp": "2026-01-15T06:26:14.397789425Z",
+      "message": "Initial codebase review with Claude",
+      "category": null
+    },
+    {
+      "timestamp": "2026-01-15T06:26:14.417735564Z",
+      "message": "Goal: Analyze Lichess/Chess.com games, find blunders, generate personalized puzzles",
+      "category": null
+    }
+  ],
+  "decisions": [
+    {
+      "timestamp": "2026-01-15T06:26:14.401032893Z",
+      "what": "Use shakmaty for chess logic",
+      "why": "Pure Rust, fast, well documented",
+      "active": true
+    },
+    {
+      "timestamp": "2026-01-15T06:26:14.403241969Z",
+      "what": "Use pgn-reader for PGN parsing",
+      "why": "Streaming parser, memory efficient",
+      "active": true
+    },
+    {
+      "timestamp": "2026-01-15T06:26:14.404942677Z",
+      "what": "Stockfish via subprocess",
+      "why": "Standard UCI protocol approach",
+      "active": true
+    }
+  ],
+  "todos": [
+    {
+      "id": 1,
+      "created": "2026-01-15T06:26:14.408134983Z",
+      "task": "Implement SAN to UCI conversion",
+      "done": false,
+      "completed_at": null,
+      "priority": 1
+    },
+    {
+      "id": 2,
+      "created": "2026-01-15T06:26:14.409751260Z",
+      "task": "Add move-by-move analysis with mistake detection",
+      "done": false,
+      "completed_at": null,
+      "priority": 1
+    },
+    {
+      "id": 3,
+      "created": "2026-01-15T06:26:14.411820167Z",
+      "task": "Integrate Lichess API",
+      "done": false,
+      "completed_at": null,
+      "priority": 2
+    },
+    {
+      "id": 4,
+      "created": "2026-01-15T06:26:14.414390447Z",
+      "task": "Add puzzle generation from blunders",
+      "done": false,
+      "completed_at": null,
+      "priority": 2
+    },
+    {
+      "id": 5,
+      "created": "2026-01-15T06:26:14.416147613Z",
+      "task": "Build game report generator",
+      "done": false,
+      "completed_at": null,
+      "priority": 3
+    }
+  ],
+  "bugs": [
+    {
+      "id": 1,
+      "created": "2026-01-15T06:26:14.406494186Z",
+      "description": "convert_san_to_uci() returns empty Vec - game analysis broken",
+      "fixed": false,
+      "fixed_at": null,
+      "resolution": null
+    }
+  ],
+  "sessions": [],
+  "notes": ""
+}

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<h1 style="margin: 1.5rem 0;">Dashboard</h1>
+
+<div class="grid grid-3">
+    <div class="card stat">
+        <div class="stat-value">{{ games_count }}</div>
+        <div class="stat-label">Games Analyzed</div>
+    </div>
+    <div class="card stat">
+        <div class="stat-value">{{ patterns_found }}</div>
+        <div class="stat-label">Patterns Found</div>
+    </div>
+    <div class="card stat">
+        <div class="stat-value">--</div>
+        <div class="stat-label">Win Rate</div>
+    </div>
+</div>
+
+<div class="card">
+    <h2 style="margin-bottom: 1rem;">Quick Actions</h2>
+    <a href="/auth/lichess" class="btn">Connect Lichess</a>
+    <a href="/games/sync" class="btn" hx-post="/games/sync" hx-swap="none">Sync Games</a>
+    <a href="/patterns" class="btn">View Patterns</a>
+</div>
+
+<div class="card">
+    <h2 style="margin-bottom: 1rem;">Top Weaknesses</h2>
+    <p style="color: #718096;">Connect your Lichess account to see your weakness patterns.</p>
+</div>
+{% endblock %}

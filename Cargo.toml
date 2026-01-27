@@ -1,8 +1,11 @@
-[package]
-name = "chess-analyzer"
-version = "0.1.0"
-edition = "2024"
+[workspace]
+resolver = "2"
+members = [
+    "crates/core",
+    "crates/web",
+]
 
-[dependencies]
-pgn-reader = "0.29.0"
-shakmaty = "0.30.0"
+[workspace.package]
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/yourusername/chess-analyzer"

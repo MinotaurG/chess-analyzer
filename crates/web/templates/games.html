@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<h1 style="margin: 1.5rem 0;">Your Games</h1>
+
+<div class="card">
+    {% if games.is_empty() %}
+    <p style="color: #718096;">No games yet. Sync your Lichess account to import games.</p>
+    <a href="/auth/lichess" class="btn" style="margin-top: 1rem;">Connect Lichess</a>
+    {% else %}
+    <table>
+        <thead>
+            <tr>
+                <th>White</th>
+                <th>Black</th>
+                <th>Result</th>
+                <th>Moves</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for game in games %}
+            <tr>
+                <td>{{ game.white }}</td>
+                <td>{{ game.black }}</td>
+                <td>{{ game.result }}</td>
+                <td>{{ game.moves }}</td>
+                <td>{{ game.date }}</td>
+                <td><a href="/games/{{ game.id }}">Analyze</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+</div>
+{% endblock %}

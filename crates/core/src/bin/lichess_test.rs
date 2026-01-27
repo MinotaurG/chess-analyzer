@@ -2,7 +2,8 @@
 
 use chess_analyzer_core::lichess::{LichessClient, GameExportParams};
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let username = std::env::args().nth(1).unwrap_or_else(|| {
         eprintln!("Usage: lichess_test <username>");
         std::process::exit(1);
@@ -13,7 +14,7 @@ fn main() {
     let client = LichessClient::new().expect("Failed to create client");
 
     // Get user info first
-    match client.get_user(&username) {
+    match client.get_user(&username).await {
         Ok(user) => {
             println!("User: {}", user.username);
             if let Some(count) = user.count {
@@ -31,7 +32,7 @@ fn main() {
 
     let params = GameExportParams::new().max(5);
     
-    match client.get_user_games(&username, &params) {
+    match client.get_user_games(&username, &params).await {
         Ok(games) => {
             println!("Found {} games:\n", games.len());
             for game in &games {

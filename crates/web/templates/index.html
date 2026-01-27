@@ -8,7 +8,7 @@
 <div class="grid grid-3">
     <div class="card stat">
         <div class="stat-value">{{ games_count }}</div>
-        <div class="stat-label">Games Analyzed</div>
+        <div class="stat-label">Games Synced</div>
     </div>
     <div class="card stat">
         <div class="stat-value">{{ patterns_found }}</div>
@@ -21,14 +21,26 @@
 </div>
 
 <div class="card">
-    <h2 style="margin-bottom: 1rem;">Quick Actions</h2>
-    <a href="/auth/lichess" class="btn">Connect Lichess</a>
-    <a href="/games/sync" class="btn" hx-post="/games/sync" hx-swap="none">Sync Games</a>
-    <a href="/patterns" class="btn">View Patterns</a>
+    <h2 style="margin-bottom: 1rem;">Sync Games</h2>
+    {% match username %}
+        {% when Some with (name) %}
+        <p style="margin-bottom: 1rem;">Connected: <strong>{{ name }}</strong></p>
+        {% when None %}
+    {% endmatch %}
+    <form action="/sync" method="post" style="display: flex; gap: 0.5rem;">
+        <input 
+            type="text" 
+            name="username" 
+            placeholder="Lichess username"
+            style="padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 4px; flex: 1; max-width: 300px;"
+        >
+        <button type="submit" class="btn">Sync Games</button>
+    </form>
 </div>
 
 <div class="card">
-    <h2 style="margin-bottom: 1rem;">Top Weaknesses</h2>
-    <p style="color: #718096;">Connect your Lichess account to see your weakness patterns.</p>
+    <h2 style="margin-bottom: 1rem;">Quick Actions</h2>
+    <a href="/games" class="btn">View Games</a>
+    <a href="/patterns" class="btn">View Patterns</a>
 </div>
 {% endblock %}

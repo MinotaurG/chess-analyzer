@@ -1,20 +1,38 @@
 use axum::{
-    routing::get,
+    routing::{get, post},
     Router,
 };
+use std::sync::{Arc, Mutex};
 use tower_http::services::ServeDir;
 
+use chess_analyzer_core::Database;
+
 mod routes;
+
+pub struct AppState {
+    pub db: Mutex<Database>,
+    pub username: Mutex<Option<String>>,
+}
 
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt::init();
 
+    // Initialize database
+    let db = Database::open("chess_analyzer.db").expect("Failed to open database");
+
+    let state = Arc::new(AppState {
+        db: Mutex::new(db),
+        username: Mutex::new(None),
+    });
+
     let app = Router::new()
         .route("/", get(routes::index))
         .route("/games", get(routes::games_list))
+        .route("/sync", post(routes::sync_games))
         .route("/health", get(routes::health))
-        .nest_service("/static", ServeDir::new("crates/web/static"));
+        .nest_service("/static", ServeDir::new("crates/web/static"))
+        .with_state(state);
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
         .await

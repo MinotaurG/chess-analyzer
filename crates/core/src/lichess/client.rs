@@ -1,6 +1,6 @@
 //! Lichess API client for fetching games and evaluations
 
-use reqwest::blocking::Client;
+use reqwest::Client;
 use reqwest::header::{HeaderMap, HeaderValue, ACCEPT, AUTHORIZATION};
 use std::time::Duration;
 
@@ -51,13 +51,17 @@ impl LichessClient {
     }
 
     /// Fetch games for a user
-    pub fn get_user_games(&self, username: &str, params: &GameExportParams) -> Result<Vec<LichessGame>> {
+    pub async fn get_user_games(&self, username: &str, params: &GameExportParams) -> Result<Vec<LichessGame>> {
         let url = format!("{}/games/user/{}", LICHESS_API_BASE, username);
         
         let mut request = self.client
             .get(&url)
             .headers(self.headers())
-            .query(&[("pgnInJson", "true")]);
+            .query(&[
+                ("pgnInJson", "true"),
+                ("opening", "true"),
+                ("moves", "true"),
+            ]);
 
         if let Some(max) = params.max {
             request = request.query(&[("max", max.to_string())]);
@@ -75,30 +79,31 @@ impl LichessClient {
             request = request.query(&[("since", since.to_string())]);
         }
 
-        let response = request.send()?;
+        let response = request.send().await?;
         
         if !response.status().is_success() {
             return Err(crate::error::Error::Lichess(format!(
                 "API error: {} - {}",
                 response.status(),
-                response.text().unwrap_or_default()
+                response.text().await.unwrap_or_default()
             )));
         }
 
-        let text = response.text()?;
+        let text = response.text().await?;
         let games = parse_ndjson_games(&text)?;
         
         Ok(games)
     }
 
     /// Get cloud evaluation for a FEN position
-    pub fn cloud_eval(&self, fen: &str, multi_pv: u8) -> Result<CloudEval> {
+    pub async fn cloud_eval(&self, fen: &str, multi_pv: u8) -> Result<CloudEval> {
         let url = format!("{}/cloud-eval", LICHESS_API_BASE);
         
         let response = self.client
             .get(&url)
             .query(&[("fen", fen), ("multiPv", &multi_pv.to_string())])
-            .send()?;
+            .send()
+            .await?;
 
         if !response.status().is_success() {
             return Err(crate::error::Error::Lichess(format!(
@@ -107,17 +112,18 @@ impl LichessClient {
             )));
         }
 
-        let eval: CloudEval = response.json()?;
+        let eval: CloudEval = response.json().await?;
         Ok(eval)
     }
 
     /// Get user profile
-    pub fn get_user(&self, username: &str) -> Result<LichessUser> {
+    pub async fn get_user(&self, username: &str) -> Result<LichessUser> {
         let url = format!("{}/user/{}", LICHESS_API_BASE, username);
         
         let response = self.client
             .get(&url)
-            .send()?;
+            .send()
+            .await?;
 
         if !response.status().is_success() {
             return Err(crate::error::Error::Lichess(format!(
@@ -126,7 +132,7 @@ impl LichessClient {
             )));
         }
 
-        let user: LichessUser = response.json()?;
+        let user: LichessUser = response.json().await?;
         Ok(user)
     }
 }

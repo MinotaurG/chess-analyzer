@@ -27,6 +27,11 @@
       "timestamp": "2026-01-27T18:25:02.811164534Z",
       "message": "Basic web UI running at localhost:3000 with dashboard and games templates",
       "category": null
+    },
+    {
+      "timestamp": "2026-01-27T18:30:49.906324213Z",
+      "message": "Lichess API client working - fetched games for noobIvan (962 games)",
+      "category": null
     }
   ],
   "decisions": [

@@ -7,8 +7,8 @@
 
 <div class="card">
     {% if games.is_empty() %}
-    <p style="color: #718096;">No games yet. Sync your Lichess account to import games.</p>
-    <a href="/auth/lichess" class="btn" style="margin-top: 1rem;">Connect Lichess</a>
+    <p style="color: #718096;">No games yet. Enter your Lichess username on the dashboard to sync games.</p>
+    <a href="/" class="btn" style="margin-top: 1rem;">Go to Dashboard</a>
     {% else %}
     <table>
         <thead>
@@ -16,9 +16,9 @@
                 <th>White</th>
                 <th>Black</th>
                 <th>Result</th>
-                <th>Moves</th>
+                <th>Opening</th>
+                <th>Speed</th>
                 <th>Date</th>
-                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -27,9 +27,9 @@
                 <td>{{ game.white }}</td>
                 <td>{{ game.black }}</td>
                 <td>{{ game.result }}</td>
-                <td>{{ game.moves }}</td>
+                <td>{{ game.opening }}</td>
+                <td>{{ game.speed }}</td>
                 <td>{{ game.date }}</td>
-                <td><a href="/games/{{ game.id }}">Analyze</a></td>
             </tr>
             {% endfor %}
         </tbody>

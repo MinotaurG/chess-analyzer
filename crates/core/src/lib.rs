@@ -6,9 +6,11 @@ pub mod engine;
 pub mod error;
 pub mod lichess;
 pub mod parser;
+pub mod storage;
 
 pub use error::{Error, Result};
 pub use lichess::LichessClient;
+pub use storage::Database;
 
 /// Basic position information
 #[derive(Debug)]

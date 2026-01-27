@@ -1,12 +1,14 @@
-//! Chess Analyzer Library
-//!
-//! Analyze your chess games, find mistakes, and improve!
+//! Chess Analyzer Core Library
 
 use shakmaty::{Chess, Color, Position};
 
-// Export modules
 pub mod engine;
+pub mod error;
+pub mod lichess;
 pub mod parser;
+
+pub use error::{Error, Result};
+pub use lichess::LichessClient;
 
 /// Basic position information
 #[derive(Debug)]

@@ -17,6 +17,16 @@
       "timestamp": "2026-01-15T06:26:14.417735564Z",
       "message": "Goal: Analyze Lichess/Chess.com games, find blunders, generate personalized puzzles",
       "category": null
+    },
+    {
+      "timestamp": "2026-01-27T18:25:02.808368373Z",
+      "message": "Restructured to workspace: crates/core (analysis) + crates/web (Axum server)",
+      "category": null
+    },
+    {
+      "timestamp": "2026-01-27T18:25:02.811164534Z",
+      "message": "Basic web UI running at localhost:3000 with dashboard and games templates",
+      "category": null
     }
   ],
   "decisions": [
@@ -37,6 +47,24 @@
       "what": "Stockfish via subprocess",
       "why": "Standard UCI protocol approach",
       "active": true
+    },
+    {
+      "timestamp": "2026-01-27T18:25:02.819635979Z",
+      "what": "htmx + Askama templates",
+      "why": "Fast iteration, all logic in Rust, easy switch to Flutter later",
+      "active": true
+    },
+    {
+      "timestamp": "2026-01-27T18:25:02.821238278Z",
+      "what": "SQLite for storage",
+      "why": "Zero budget, no server needed, portable",
+      "active": true
+    },
+    {
+      "timestamp": "2026-01-27T18:25:02.822642563Z",
+      "what": "Lichess Cloud Eval",
+      "why": "Free, avoids bundling Stockfish on mobile",
+      "active": true
     }
   ],
   "todos": [
@@ -44,8 +72,8 @@
       "id": 1,
       "created": "2026-01-15T06:26:14.408134983Z",
       "task": "Implement SAN to UCI conversion",
-      "done": false,
-      "completed_at": null,
+      "done": true,
+      "completed_at": "2026-01-27T18:25:32.218815919Z",
       "priority": 1
     },
     {
@@ -79,6 +107,38 @@
       "done": false,
       "completed_at": null,
       "priority": 3
+    },
+    {
+      "id": 6,
+      "created": "2026-01-27T18:25:02.813402178Z",
+      "task": "Lichess API client - game export",
+      "done": false,
+      "completed_at": null,
+      "priority": 1
+    },
+    {
+      "id": 7,
+      "created": "2026-01-27T18:25:02.814974126Z",
+      "task": "SQLite storage layer",
+      "done": false,
+      "completed_at": null,
+      "priority": 1
+    },
+    {
+      "id": 8,
+      "created": "2026-01-27T18:25:02.816261094Z",
+      "task": "Lichess OAuth integration",
+      "done": false,
+      "completed_at": null,
+      "priority": 2
+    },
+    {
+      "id": 9,
+      "created": "2026-01-27T18:25:02.817861300Z",
+      "task": "Pattern detection engine",
+      "done": false,
+      "completed_at": null,
+      "priority": 2
     }
   ],
   "bugs": [

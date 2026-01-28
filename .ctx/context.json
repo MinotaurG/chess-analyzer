@@ -32,6 +32,11 @@
       "timestamp": "2026-01-27T18:30:49.906324213Z",
       "message": "Lichess API client working - fetched games for noobIvan (962 games)",
       "category": null
+    },
+    {
+      "timestamp": "2026-01-27T18:45:47.129544578Z",
+      "message": "Web UI working - can sync games from Lichess and view in browser",
+      "category": null
     }
   ],
   "decisions": [
@@ -144,6 +149,46 @@
       "done": false,
       "completed_at": null,
       "priority": 2
+    },
+    {
+      "id": 10,
+      "created": "2026-01-28T05:36:10.833350929Z",
+      "task": "Filter analysis: last X games",
+      "done": false,
+      "completed_at": null,
+      "priority": 3
+    },
+    {
+      "id": 11,
+      "created": "2026-01-28T05:36:10.836611256Z",
+      "task": "Filter analysis: by ELO range",
+      "done": false,
+      "completed_at": null,
+      "priority": 3
+    },
+    {
+      "id": 12,
+      "created": "2026-01-28T05:36:10.838495205Z",
+      "task": "Filter analysis: by time control",
+      "done": false,
+      "completed_at": null,
+      "priority": 3
+    },
+    {
+      "id": 13,
+      "created": "2026-01-28T05:36:10.840978082Z",
+      "task": "Filter analysis: by opening",
+      "done": false,
+      "completed_at": null,
+      "priority": 3
+    },
+    {
+      "id": 14,
+      "created": "2026-01-28T05:36:10.842707839Z",
+      "task": "Filter analysis: only losses",
+      "done": false,
+      "completed_at": null,
+      "priority": 3
     }
   ],
   "bugs": [

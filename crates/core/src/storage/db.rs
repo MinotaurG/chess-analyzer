@@ -7,6 +7,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use super::models::*;
 use crate::error::Result;
 use crate::lichess::LichessGame;
+use crate::patterns::DetectedPattern;
 
 pub struct Database {
     conn: Connection,
@@ -131,6 +132,36 @@ impl Database {
         Ok(count)
     }
 
+    pub fn insert_pattern(&self, game_id: i64, pattern: &DetectedPattern) -> Result<i64> {
+        self.conn.execute(
+            r#"
+            INSERT INTO patterns 
+            (game_id, move_number, pattern_type, severity, centipawn_loss, position_fen, description, created_at)
+            VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)
+            "#,
+            params![
+                game_id,
+                pattern.move_number,
+                pattern.pattern_type.as_str(),
+                pattern.severity.as_str(),
+                pattern.cp_loss,
+                pattern.fen_before,
+                pattern.description,
+                Self::now(),
+            ],
+        )?;
+
+        Ok(self.conn.last_insert_rowid())
+    }
+
+    pub fn mark_game_analyzed(&self, game_id: i64) -> Result<()> {
+        self.conn.execute(
+            "UPDATE games SET analyzed = 1 WHERE id = ?1",
+            params![game_id],
+        )?;
+        Ok(())
+    }
+
     pub fn get_game(&self, id: i64) -> Result<Option<StoredGame>> {
         let mut stmt = self.conn.prepare(
             "SELECT * FROM games WHERE id = ?1"
@@ -218,6 +249,35 @@ impl Database {
         Ok(games)
     }
 
+    pub fn get_unanalyzed_games(&self, limit: u32) -> Result<Vec<StoredGame>> {
+        let mut stmt = self.conn.prepare(
+            "SELECT * FROM games WHERE analyzed = 0 ORDER BY played_at DESC LIMIT ?1"
+        )?;
+
+        let games = stmt.query_map(params![limit], |row| {
+            Ok(StoredGame {
+                id: row.get(0)?,
+                lichess_id: row.get(1)?,
+                white_username: row.get(2)?,
+                black_username: row.get(3)?,
+                white_rating: row.get(4)?,
+                black_rating: row.get(5)?,
+                result: row.get(6)?,
+                speed: row.get(7)?,
+                rated: row.get(8)?,
+                opening_eco: row.get(9)?,
+                opening_name: row.get(10)?,
+                moves: row.get(11)?,
+                pgn: row.get(12)?,
+                analyzed: row.get(13)?,
+                played_at: row.get(14)?,
+                created_at: row.get(15)?,
+            })
+        })?.collect::<std::result::Result<Vec<_>, _>>()?;
+
+        Ok(games)
+    }
+
     pub fn count_games(&self) -> Result<u32> {
         let count: u32 = self.conn.query_row(
             "SELECT COUNT(*) FROM games",
@@ -225,6 +285,38 @@ impl Database {
             |row| row.get(0),
         )?;
         Ok(count)
+    }
+
+    pub fn count_patterns(&self) -> Result<u32> {
+        let count: u32 = self.conn.query_row(
+            "SELECT COUNT(*) FROM patterns",
+            [],
+            |row| row.get(0),
+        )?;
+        Ok(count)
+    }
+
+    pub fn get_all_patterns(&self) -> Result<Vec<StoredPattern>> {
+        let mut stmt = self.conn.prepare(
+            "SELECT * FROM patterns ORDER BY id DESC"
+        )?;
+
+        let patterns = stmt.query_map([], |row| {
+            Ok(StoredPattern {
+                id: row.get(0)?,
+                game_id: row.get(1)?,
+                move_number: row.get(2)?,
+                pattern_type: row.get(3)?,
+                subtype: row.get(4)?,
+                severity: row.get(5)?,
+                centipawn_loss: row.get(6)?,
+                position_fen: row.get(7)?,
+                description: row.get(8)?,
+                created_at: row.get(9)?,
+            })
+        })?.collect::<std::result::Result<Vec<_>, _>>()?;
+
+        Ok(patterns)
     }
 
     pub fn get_last_sync_time(&self, username: &str) -> Result<Option<u64>> {

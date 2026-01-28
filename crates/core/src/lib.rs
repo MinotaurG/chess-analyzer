@@ -6,10 +6,12 @@ pub mod engine;
 pub mod error;
 pub mod lichess;
 pub mod parser;
+pub mod patterns;
 pub mod storage;
 
 pub use error::{Error, Result};
 pub use lichess::LichessClient;
+pub use patterns::{PatternDetector, DetectedPattern, PatternType, Severity};
 pub use storage::Database;
 
 /// Basic position information

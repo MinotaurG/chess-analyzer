@@ -5,6 +5,16 @@
 {% block content %}
 <h1 style="margin: 1.5rem 0;">Your Games</h1>
 
+<div class="card" style="margin-bottom: 1rem;">
+    {% match username %}
+        {% when Some with (name) %}
+        <p>Logged in as: <strong>{{ name }}</strong></p>
+        <a href="/analyze" class="btn">Analyze Games</a>
+        {% when None %}
+        <p style="color: #718096;">Enter your username on the dashboard to sync games.</p>
+    {% endmatch %}
+</div>
+
 <div class="card">
     {% if games.is_empty() %}
     <p style="color: #718096;">No games yet. Enter your Lichess username on the dashboard to sync games.</p>

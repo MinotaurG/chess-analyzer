@@ -18,7 +18,6 @@ pub struct AppState {
 async fn main() {
     tracing_subscriber::fmt::init();
 
-    // Initialize database
     let db = Database::open("chess_analyzer.db").expect("Failed to open database");
 
     let state = Arc::new(AppState {
@@ -29,7 +28,9 @@ async fn main() {
     let app = Router::new()
         .route("/", get(routes::index))
         .route("/games", get(routes::games_list))
+        .route("/patterns", get(routes::patterns_list))
         .route("/sync", post(routes::sync_games))
+        .route("/analyze", get(routes::analyze_games))
         .route("/health", get(routes::health))
         .nest_service("/static", ServeDir::new("crates/web/static"))
         .with_state(state);

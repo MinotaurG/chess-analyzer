@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<h1 style="margin: 1.5rem 0;">Weakness Patterns</h1>
+
+<div class="grid grid-3">
+    <div class="card stat">
+        <div class="stat-value" style="color: #e53e3e;">{{ summary.blunders }}</div>
+        <div class="stat-label">Blunders</div>
+    </div>
+    <div class="card stat">
+        <div class="stat-value" style="color: #dd6b20;">{{ summary.mistakes }}</div>
+        <div class="stat-label">Mistakes</div>
+    </div>
+    <div class="card stat">
+        <div class="stat-value" style="color: #d69e2e;">{{ summary.inaccuracies }}</div>
+        <div class="stat-label">Inaccuracies</div>
+    </div>
+</div>
+
+<div class="card">
+    <h2 style="margin-bottom: 1rem;">Detected Patterns</h2>
+    {% if patterns.is_empty() %}
+    <p style="color: #718096;">No patterns detected yet. Analyze your games first.</p>
+    <a href="/analyze" class="btn" style="margin-top: 1rem;">Analyze Games</a>
+    {% else %}
+    <table>
+        <thead>
+            <tr>
+                <th>Move</th>
+                <th>Type</th>
+                <th>Severity</th>
+                <th>CP Loss</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in patterns %}
+            <tr>
+                <td>{{ p.move_number }}</td>
+                <td>{{ p.pattern_type }}</td>
+                <td>
+                    {% if p.severity == "blunder" %}
+                    <span style="color: #e53e3e; font-weight: bold;">Blunder</span>
+                    {% else if p.severity == "mistake" %}
+                    <span style="color: #dd6b20; font-weight: bold;">Mistake</span>
+                    {% else %}
+                    <span style="color: #d69e2e;">Inaccuracy</span>
+                    {% endif %}
+                </td>
+                <td>-{{ p.cp_loss }}</td>
+                <td>{{ p.description }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+</div>
+{% endblock %}

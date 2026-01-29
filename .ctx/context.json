@@ -67,6 +67,11 @@
       "timestamp": "2026-01-29T13:40:11.581764687Z",
       "message": "Coordinate trainer fully functional - find/name/color modes, timer, stats, weak squares tracking",
       "category": null
+    },
+    {
+      "timestamp": "2026-01-29T13:45:52.324196738Z",
+      "message": "Training hub page complete - links to all training modules",
+      "category": null
     }
   ],
   "decisions": [
@@ -216,6 +221,14 @@
       "id": 14,
       "created": "2026-01-28T05:36:10.842707839Z",
       "task": "Filter analysis: only losses",
+      "done": false,
+      "completed_at": null,
+      "priority": 3
+    },
+    {
+      "id": 15,
+      "created": "2026-01-29T15:31:28.750636882Z",
+      "task": "Analysis board: full game analysis with eval bar, move navigation, Lichess cloud eval integration",
       "done": false,
       "completed_at": null,
       "priority": 3

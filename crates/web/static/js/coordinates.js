@@ -548,4 +548,40 @@
     } else {
         init();
     }
+
+    // ==========================================================================
+    // SAVE SESSION TO SERVER
+    // ==========================================================================
+
+    function saveSession() {
+        if (state.attempts === 0) return;
+        
+        const totalTime = state.times.reduce((a, b) => a + b, 0);
+        const correctTimes = state.history.filter(h => h.correct).map(h => h.time);
+        const bestTime = correctTimes.length > 0 ? Math.min(...correctTimes) : null;
+        
+        fetch('/api/training/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                training_type: 'coordinates',
+                attempts: state.attempts,
+                correct: state.correct,
+                total_time_ms: totalTime,
+                best_time_ms: bestTime,
+            }),
+        }).catch(err => console.error('Failed to save session:', err));
+    }
+
+    // Save when leaving page
+    window.addEventListener('beforeunload', saveSession);
+
+    // Save periodically (every 30 seconds if there's activity)
+    let lastSavedAttempts = 0;
+    setInterval(() => {
+        if (state.attempts > lastSavedAttempts) {
+            saveSession();
+            lastSavedAttempts = state.attempts;
+        }
+    }, 30000);
 })();

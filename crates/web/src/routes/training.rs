@@ -2,10 +2,13 @@ use askama::Template;
 use axum::{
     extract::{Query, State},
     response::{Html, IntoResponse},
+    Json,
+    http::StatusCode,
 };
 use serde::Deserialize;
 use std::sync::Arc;
 
+use chess_analyzer_core::storage::{TrainingStats, AllTrainingStats};
 use crate::AppState;
 
 // ============================================================================
@@ -32,6 +35,19 @@ pub struct OpeningsTemplate {
     pub lines: Vec<OpeningLineView>,
 }
 
+#[derive(Template)]
+#[template(path = "training/index.html")]
+pub struct TrainingHubTemplate {
+    pub streak: u32,
+    pub today_drills: u32,
+    pub total_drills: u32,
+    pub accuracy: u32,
+    pub coord_progress: u32,
+    pub viz_progress: u32,
+    pub opening_progress: u32,
+    pub opening_lines: u32,
+}
+
 pub struct OpeningLineView {
     pub idx: usize,
     pub name: String,
@@ -53,6 +69,44 @@ pub struct DifficultyQuery {
 // ============================================================================
 // HANDLERS
 // ============================================================================
+
+pub async fn training_hub(
+    State(state): State<Arc<AppState>>,
+) -> impl IntoResponse {
+    let db = state.db.lock().unwrap();
+    
+    let default_stats = TrainingStats {
+        today_attempts: 0,
+        today_correct: 0,
+        total_attempts: 0,
+        total_correct: 0,
+        total_time_ms: 0,
+        best_time_ms: None,
+        streak: 0,
+    };
+    
+    let stats = db.get_all_training_stats().unwrap_or(AllTrainingStats {
+        coordinates: default_stats.clone(),
+        visualization: default_stats.clone(),
+        openings: default_stats,
+        today_total: 0,
+        all_time_total: 0,
+        overall_accuracy: 0,
+        max_streak: 0,
+    });
+
+    let template = TrainingHubTemplate {
+        streak: stats.max_streak,
+        today_drills: stats.today_total,
+        total_drills: stats.all_time_total,
+        accuracy: stats.overall_accuracy,
+        coord_progress: stats.coordinates.accuracy(),
+        viz_progress: stats.visualization.accuracy(),
+        opening_progress: stats.openings.accuracy(),
+        opening_lines: 0,
+    };
+    Html(template.render().unwrap())
+}
 
 pub async fn coordinates_drill() -> impl IntoResponse {
     let template = CoordinatesTemplate {
@@ -108,33 +162,32 @@ pub async fn openings_trainer(
 }
 
 // ============================================================================
-// TRAINING HUB
+// API
 // ============================================================================
 
-#[derive(Template)]
-#[template(path = "training/index.html")]
-pub struct TrainingHubTemplate {
-    pub streak: u32,
-    pub today_drills: u32,
-    pub total_drills: u32,
-    pub accuracy: u32,
-    pub coord_progress: u32,
-    pub viz_progress: u32,
-    pub opening_progress: u32,
-    pub opening_lines: u32,
+#[derive(Deserialize)]
+pub struct SaveSessionRequest {
+    pub training_type: String,
+    pub attempts: u32,
+    pub correct: u32,
+    pub total_time_ms: u64,
+    pub best_time_ms: Option<u64>,
 }
 
-pub async fn training_hub() -> impl IntoResponse {
-    // TODO: Load real stats from database
-    let template = TrainingHubTemplate {
-        streak: 0,
-        today_drills: 0,
-        total_drills: 0,
-        accuracy: 0,
-        coord_progress: 0,
-        viz_progress: 0,
-        opening_progress: 0,
-        opening_lines: 0,
-    };
-    Html(template.render().unwrap())
+pub async fn save_session(
+    State(state): State<Arc<AppState>>,
+    Json(req): Json<SaveSessionRequest>,
+) -> StatusCode {
+    let db = state.db.lock().unwrap();
+    
+    match db.save_training_session(
+        &req.training_type,
+        req.attempts,
+        req.correct,
+        req.total_time_ms,
+        req.best_time_ms,
+    ) {
+        Ok(_) => StatusCode::OK,
+        Err(_) => StatusCode::INTERNAL_SERVER_ERROR,
+    }
 }

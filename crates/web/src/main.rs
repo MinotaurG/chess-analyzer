@@ -36,6 +36,7 @@ async fn main() {
         .route("/training/coordinates", get(routes::training::coordinates_drill))
         .route("/training/visualization", get(routes::training::visualization_drill))
         .route("/training/openings", get(routes::training::openings_trainer))
+        .route("/api/training/save", post(routes::training::save_session))
         .nest_service("/static", ServeDir::new("crates/web/static"))
         .with_state(state);
 

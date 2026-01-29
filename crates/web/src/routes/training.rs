@@ -106,3 +106,35 @@ pub async fn openings_trainer(
     };
     Html(template.render().unwrap())
 }
+
+// ============================================================================
+// TRAINING HUB
+// ============================================================================
+
+#[derive(Template)]
+#[template(path = "training/index.html")]
+pub struct TrainingHubTemplate {
+    pub streak: u32,
+    pub today_drills: u32,
+    pub total_drills: u32,
+    pub accuracy: u32,
+    pub coord_progress: u32,
+    pub viz_progress: u32,
+    pub opening_progress: u32,
+    pub opening_lines: u32,
+}
+
+pub async fn training_hub() -> impl IntoResponse {
+    // TODO: Load real stats from database
+    let template = TrainingHubTemplate {
+        streak: 0,
+        today_drills: 0,
+        total_drills: 0,
+        accuracy: 0,
+        coord_progress: 0,
+        viz_progress: 0,
+        opening_progress: 0,
+        opening_lines: 0,
+    };
+    Html(template.render().unwrap())
+}

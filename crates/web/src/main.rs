@@ -32,6 +32,7 @@ async fn main() {
         .route("/sync", post(routes::sync_games))
         .route("/analyze", get(routes::analyze_games))
         .route("/health", get(routes::health))
+        .route("/train", get(routes::training::training_hub))
         .route("/training/coordinates", get(routes::training::coordinates_drill))
         .route("/training/visualization", get(routes::training::visualization_drill))
         .route("/training/openings", get(routes::training::openings_trainer))

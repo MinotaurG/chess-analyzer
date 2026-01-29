@@ -1,0 +1,165 @@
+{% extends "../base.html" %}
+
+{% block title %}Training - Chess Trainer{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Training</h1>
+</div>
+
+<!-- Quick Stats -->
+<div class="grid grid-4" style="margin-bottom: 1.5rem;">
+    <div class="card stat">
+        <div class="stat-value">{{ streak }}</div>
+        <div class="stat-label">Day Streak</div>
+    </div>
+    <div class="card stat">
+        <div class="stat-value">{{ today_drills }}</div>
+        <div class="stat-label">Today</div>
+    </div>
+    <div class="card stat">
+        <div class="stat-value">{{ total_drills }}</div>
+        <div class="stat-label">All Time</div>
+    </div>
+    <div class="card stat">
+        <div class="stat-value">{{ accuracy }}%</div>
+        <div class="stat-label">Accuracy</div>
+    </div>
+</div>
+
+<!-- Training Modules -->
+<div class="grid grid-3">
+    <!-- Coordinates -->
+    <div class="card training-card">
+        <div class="training-icon">&#9678;</div>
+        <h2 class="training-title">Coordinates</h2>
+        <p class="training-desc">Master square names instantly. Essential for reading notation and visualization.</p>
+        <div class="training-progress">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: {{ coord_progress }}%;"></div>
+            </div>
+            <span class="progress-text">{{ coord_progress }}% mastery</span>
+        </div>
+        <a href="/training/coordinates" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Practice</a>
+    </div>
+
+    <!-- Visualization -->
+    <div class="card training-card">
+        <div class="training-icon">&#9670;</div>
+        <h2 class="training-title">Visualization</h2>
+        <p class="training-desc">See the board in your mind. Memorize positions and answer without looking.</p>
+        <div class="training-progress">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: {{ viz_progress }}%;"></div>
+            </div>
+            <span class="progress-text">{{ viz_progress }}% mastery</span>
+        </div>
+        <a href="/training/visualization" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Practice</a>
+    </div>
+
+    <!-- Openings -->
+    <div class="card training-card">
+        <div class="training-icon">&#9823;</div>
+        <h2 class="training-title">Openings</h2>
+        <p class="training-desc">Drill your repertoire. Learn from your own games with spaced repetition.</p>
+        <div class="training-progress">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: {{ opening_progress }}%;"></div>
+            </div>
+            <span class="progress-text">{{ opening_lines }} lines</span>
+        </div>
+        <a href="/training/openings" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Practice</a>
+    </div>
+</div>
+
+<!-- Tips Section -->
+<div class="card" style="margin-top: 1.5rem;">
+    <div class="card-header">
+        <span class="card-title">Training Tips</span>
+    </div>
+    <div class="tips-grid">
+        <div class="tip">
+            <strong>Consistency beats intensity.</strong>
+            15 minutes daily is better than 2 hours once a week.
+        </div>
+        <div class="tip">
+            <strong>Coordinates first.</strong>
+            Master the board before moving to visualization.
+        </div>
+        <div class="tip">
+            <strong>Use keyboard shortcuts.</strong>
+            Press <span class="kbd">?</span> on any trainer to see available shortcuts.
+        </div>
+    </div>
+</div>
+
+<style>
+.training-card {
+    text-align: center;
+    padding: 1.5rem;
+}
+
+.training-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    opacity: 0.8;
+}
+
+.training-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.training-desc {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    min-height: 3rem;
+}
+
+.training-progress {
+    margin-top: auto;
+}
+
+.progress-bar {
+    height: 6px;
+    background: var(--bg-tertiary);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.tip {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    padding: 0.75rem;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+}
+
+.tip strong {
+    color: var(--text-primary);
+    display: block;
+    margin-bottom: 0.25rem;
+}
+</style>
+{% endblock %}

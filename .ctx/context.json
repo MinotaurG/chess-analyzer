@@ -42,6 +42,31 @@
       "timestamp": "2026-01-28T07:19:58.482675770Z",
       "message": "Pattern detection working with local Stockfish - found patterns in games",
       "category": null
+    },
+    {
+      "timestamp": "2026-01-29T05:04:15.464686541Z",
+      "message": "Starting training modules feature - coordinates, visualization, openings",
+      "category": null
+    },
+    {
+      "timestamp": "2026-01-29T06:13:54.895651955Z",
+      "message": "Core training modules compiling - coordinates, openings, visualization",
+      "category": null
+    },
+    {
+      "timestamp": "2026-01-29T13:36:51.131597302Z",
+      "message": "Coordinate trainer UI working - board renders, click to find squares",
+      "category": null
+    },
+    {
+      "timestamp": "2026-01-29T13:40:08.331287957Z",
+      "message": "Coordinate trainer fully functional - find/name/color modes, timer, stats, weak squares tracking",
+      "category": null
+    },
+    {
+      "timestamp": "2026-01-29T13:40:11.581764687Z",
+      "message": "Coordinate trainer fully functional - find/name/color modes, timer, stats, weak squares tracking",
+      "category": null
     }
   ],
   "decisions": [

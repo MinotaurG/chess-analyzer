@@ -32,6 +32,9 @@ async fn main() {
         .route("/sync", post(routes::sync_games))
         .route("/analyze", get(routes::analyze_games))
         .route("/health", get(routes::health))
+        .route("/training/coordinates", get(routes::training::coordinates_drill))
+        .route("/training/visualization", get(routes::training::visualization_drill))
+        .route("/training/openings", get(routes::training::openings_trainer))
         .nest_service("/static", ServeDir::new("crates/web/static"))
         .with_state(state);
 
@@ -39,7 +42,7 @@ async fn main() {
         .await
         .unwrap();
 
-    println!("Server running at http://127.0.0.1:3000");
+    println!("Server running at http://localhost:3000");
 
     axum::serve(listener, app).await.unwrap();
 }

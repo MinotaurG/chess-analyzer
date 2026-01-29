@@ -8,11 +8,13 @@ pub mod lichess;
 pub mod parser;
 pub mod patterns;
 pub mod storage;
+pub mod training;
 
 pub use error::{Error, Result};
 pub use lichess::LichessClient;
 pub use patterns::{PatternDetector, DetectedPattern, PatternType, Severity};
 pub use storage::Database;
+pub use training::{CoordinateTrainer, OpeningTrainer, OpeningLine, VisualizationDrill};
 
 /// Basic position information
 #[derive(Debug)]

@@ -1,0 +1,114 @@
+{% extends "../base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <a href="/train" class="back-link">< Back to Training</a>
+    <h1 class="page-title">Coordinate Training</h1>
+</div>
+
+<div class="grid grid-2">
+    <!-- Board Section -->
+    <div class="card">
+        <div class="board-wrapper">
+            <div class="board-container">
+                <div id="chess-board" class="chess-board"></div>
+            </div>
+        </div>
+        
+        <div id="timer-bar" class="timer-bar" style="display: none;">
+            <div id="timer-fill" class="timer-fill"></div>
+        </div>
+        
+        <div class="prompt-area">
+            <div id="prompt-text" class="prompt-text">Click on:</div>
+            <div id="prompt-target" class="prompt-target">e4</div>
+            
+            <div id="prompt-input" class="prompt-input" style="display: none;">
+                <input type="text" id="square-input" maxlength="2" placeholder="e4" autocomplete="off">
+            </div>
+            
+            <div id="color-buttons" class="color-buttons" style="display: none;">
+                <button class="btn btn-light-square" data-color="light">Light</button>
+                <button class="btn btn-dark-square" data-color="dark">Dark</button>
+            </div>
+            
+            <div id="feedback" class="feedback"></div>
+        </div>
+    </div>
+    
+    <!-- Controls Section -->
+    <div>
+        <!-- Stats Card -->
+        <div class="card" style="margin-bottom: 1rem;">
+            <div class="card-header">
+                <span class="card-title">Session</span>
+                <button id="btn-reset" class="btn">Reset <span class="kbd">R</span></button>
+            </div>
+            <div class="grid grid-4">
+                <div class="stat">
+                    <div id="stat-attempts" class="stat-value">0</div>
+                    <div class="stat-label">Attempts</div>
+                </div>
+                <div class="stat">
+                    <div id="stat-accuracy" class="stat-value">0%</div>
+                    <div class="stat-label">Accuracy</div>
+                </div>
+                <div class="stat">
+                    <div id="stat-avgtime" class="stat-value">0.00s</div>
+                    <div class="stat-label">Avg Time</div>
+                </div>
+                <div class="stat">
+                    <div id="stat-besttime" class="stat-value">-</div>
+                    <div class="stat-label">Best</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mode Card -->
+        <div class="card" style="margin-bottom: 1rem;">
+            <div class="option-group">
+                <div class="option-label">Mode</div>
+                <div class="option-buttons">
+                    <button class="btn active" data-mode="find">Find Square <span class="kbd">1</span></button>
+                    <button class="btn" data-mode="name">Name Square <span class="kbd">2</span></button>
+                    <button class="btn" data-mode="color">Square Color <span class="kbd">3</span></button>
+                </div>
+            </div>
+            
+            <div class="option-group">
+                <div class="option-label">Perspective</div>
+                <div class="option-buttons">
+                    <button class="btn active" data-perspective="white">White <span class="kbd">W</span></button>
+                    <button class="btn" data-perspective="black">Black <span class="kbd">B</span></button>
+                </div>
+            </div>
+            
+            <div class="option-group" style="margin-bottom: 0;">
+                <div class="option-label">Timer</div>
+                <div class="option-buttons">
+                    <button class="btn active" data-timer="0">Off</button>
+                    <button class="btn" data-timer="5">5s</button>
+                    <button class="btn" data-timer="3">3s</button>
+                    <button class="btn" data-timer="2">2s</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Weak Squares Card -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Weak Squares</span>
+            </div>
+            <div id="weak-squares" class="weak-list">
+                <div class="weak-item" style="color: var(--text-muted)">No weak squares yet</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/coordinates.js"></script>
+{% endblock %}

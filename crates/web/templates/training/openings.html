@@ -1,0 +1,53 @@
+{% extends "../base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <a href="/train" class="back-link">< Back to Training</a>
+    <h1 class="page-title">Opening Trainer</h1>
+</div>
+
+{% if lines.is_empty() %}
+<div class="card">
+    <p style="color: var(--text-muted);">No openings found. Sync your games first to extract your opening repertoire.</p>
+    <a href="/" class="btn btn-primary" style="margin-top: 1rem;">Go to Dashboard</a>
+</div>
+{% else %}
+<div class="card">
+    <table>
+        <thead>
+            <tr>
+                <th>Opening</th>
+                <th>Color</th>
+                <th>Accuracy</th>
+                <th>Drills</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for line in lines %}
+            <tr>
+                <td>
+                    <strong>{{ line.eco }}</strong><br>
+                    <small style="color: var(--text-secondary);">{{ line.name }}</small>
+                </td>
+                <td>{{ line.color }}</td>
+                <td>
+                    {% if line.times_drilled > 0 %}
+                    {{ line.accuracy }}%
+                    {% else %}
+                    -
+                    {% endif %}
+                </td>
+                <td>{{ line.times_drilled }}</td>
+                <td>
+                    <button class="btn btn-primary">Drill</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}

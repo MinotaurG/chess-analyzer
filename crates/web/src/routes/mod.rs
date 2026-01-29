@@ -242,3 +242,5 @@ pub async fn patterns_list(State(state): State<Arc<AppState>>) -> impl IntoRespo
 pub async fn health() -> &'static str {
     "OK"
 }
+
+pub mod training;

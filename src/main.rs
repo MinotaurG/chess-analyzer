@@ -243,10 +243,44 @@ fn analyze_games(file_path: &str) {
     println!("✅ Analysis complete!");
 }
 
-/// Converts SAN moves to UCI format (simplified - just passes through for now)
-/// TODO: Implement proper SAN to UCI conversion using position tracking
+/// src/main.rs - Replace the broken convert_san_to_uci function
+
+/// Converts SAN moves to UCI format by replaying through positions
 fn convert_san_to_uci(san_moves: &[String]) -> Vec<String> {
-    // For now, we'll use a different approach in the next iteration
-    // This is a placeholder that won't work correctly yet
-    Vec::new()
+    use shakmaty::{san::San, uci::Uci, Chess, Position};
+    
+    let mut position = Chess::default();
+    let mut uci_moves = Vec::new();
+    
+    for san_str in san_moves {
+        // Parse SAN string
+        let san: San = match san_str.parse() {
+            Ok(s) => s,
+            Err(e) => {
+                eprintln!("Warning: Could not parse SAN '{}': {}", san_str, e);
+                break;
+            }
+        };
+        
+        // Convert to move in current position
+        let mv = match san.to_move(&position) {
+            Ok(m) => m,
+            Err(e) => {
+                eprintln!("Warning: Invalid move '{}': {}", san_str, e);
+                break;
+            }
+        };
+        
+        // Convert to UCI notation
+        let uci = Uci::from_standard(&mv);
+        uci_moves.push(uci.to_string());
+        
+        // Apply move
+        position = match position.play(mv) {
+            Ok(p) => p,
+            Err(_) => break,
+        };
+    }
+    
+    uci_moves
 }

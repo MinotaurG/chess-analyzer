@@ -59,6 +59,8 @@ impl Database {
                 severity TEXT NOT NULL,
                 centipawn_loss INTEGER,
                 position_fen TEXT NOT NULL,
+                player_move TEXT NOT NULL,
+                best_move TEXT NOT NULL,
                 description TEXT NOT NULL,
                 created_at INTEGER NOT NULL,
                 FOREIGN KEY (game_id) REFERENCES games(id)
@@ -155,12 +157,12 @@ impl Database {
         Ok(count)
     }
 
-    pub fn insert_pattern(&self, game_id: i64, pattern: &DetectedPattern) -> Result<i64> {
+        pub fn insert_pattern(&self, game_id: i64, pattern: &DetectedPattern) -> Result<i64> {
         self.conn.execute(
             r#"
             INSERT INTO patterns 
-            (game_id, move_number, pattern_type, severity, centipawn_loss, position_fen, description, created_at)
-            VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)
+            (game_id, move_number, pattern_type, severity, centipawn_loss, position_fen, player_move, best_move, description, created_at)
+            VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)
             "#,
             params![
                 game_id,
@@ -169,6 +171,8 @@ impl Database {
                 pattern.severity.as_str(),
                 pattern.cp_loss,
                 pattern.fen_before,
+                pattern.player_move,
+                pattern.best_move,
                 pattern.description,
                 Self::now(),
             ],

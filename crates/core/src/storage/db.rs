@@ -123,7 +123,7 @@ impl Database {
             r#"
             INSERT OR IGNORE INTO games 
             (lichess_id, white_username, black_username, white_rating, black_rating,
-             result, speed, rated, opening_eco, opening_name, moves, pgn, played_at, created_at)
+            result, speed, rated, opening_eco, opening_name, moves, pgn, played_at, created_at)
             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14)
             "#,
             params![
@@ -157,7 +157,7 @@ impl Database {
         Ok(count)
     }
 
-        pub fn insert_pattern(&self, game_id: i64, pattern: &DetectedPattern) -> Result<i64> {
+    pub fn insert_pattern(&self, game_id: i64, pattern: &DetectedPattern) -> Result<i64> {
         self.conn.execute(
             r#"
             INSERT INTO patterns 
@@ -273,11 +273,37 @@ impl Database {
                 severity: row.get(5)?,
                 centipawn_loss: row.get(6)?,
                 position_fen: row.get(7)?,
-                description: row.get(8)?,
-                created_at: row.get(9)?,
+                player_move: row.get(8)?,
+                best_move: row.get(9)?,
+                description: row.get(10)?,
+                created_at: row.get(11)?,
             })
         })?.collect::<std::result::Result<Vec<_>, _>>()?;
         Ok(patterns)
+    }
+
+    pub fn get_random_puzzle(&self) -> Result<Option<StoredPattern>> {
+        let mut stmt = self.conn.prepare(
+            "SELECT * FROM patterns ORDER BY RANDOM() LIMIT 1"
+        )?;
+        let mut patterns = stmt.query_map([], |row| {
+            Ok(StoredPattern {
+                id: row.get(0)?,
+                game_id: row.get(1)?,
+                move_number: row.get(2)?,
+                pattern_type: row.get(3)?,
+                subtype: row.get(4)?,
+                severity: row.get(5)?,
+                centipawn_loss: row.get(6)?,
+                position_fen: row.get(7)?,
+                player_move: row.get(8)?,
+                best_move: row.get(9)?,
+                description: row.get(10)?,
+                created_at: row.get(11)?,
+            })
+        })?;
+        
+        Ok(patterns.next().transpose()?)
     }
 
     // ========================================================================

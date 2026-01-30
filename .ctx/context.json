@@ -72,6 +72,16 @@
       "timestamp": "2026-01-29T13:45:52.324196738Z",
       "message": "Training hub page complete - links to all training modules",
       "category": null
+    },
+    {
+      "timestamp": "2026-01-29T15:57:04.537871789Z",
+      "message": "Fixed patterns schema: now stores player_move and best_move for puzzle generation",
+      "category": null
+    },
+    {
+      "timestamp": "2026-01-29T22:09:14.211898035Z",
+      "message": "Added continuation API with Stockfish analysis after correct puzzle move",
+      "category": null
     }
   ],
   "decisions": [
@@ -232,6 +242,22 @@
       "done": false,
       "completed_at": null,
       "priority": 3
+    },
+    {
+      "id": 16,
+      "created": "2026-01-29T15:57:04.539842459Z",
+      "task": "Analysis board: full game analysis with eval bar, move navigation, Lichess cloud eval",
+      "done": false,
+      "completed_at": null,
+      "priority": 3
+    },
+    {
+      "id": 17,
+      "created": "2026-01-29T22:09:14.208468896Z",
+      "task": "Puzzle UI: add back/forward move navigation controls",
+      "done": false,
+      "completed_at": null,
+      "priority": 2
     }
   ],
   "bugs": [

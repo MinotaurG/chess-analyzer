@@ -32,6 +32,8 @@ pub struct StoredPattern {
     pub severity: String,
     pub centipawn_loss: Option<i32>,
     pub position_fen: String,
+    pub player_move: String,
+    pub best_move: String,
     pub description: String,
     pub created_at: u64,
 }

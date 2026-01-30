@@ -501,3 +501,153 @@ th {
 .timer-fill.danger {
     background: var(--danger);
 }
+
+/* Dragging piece */
+.piece.dragging {
+    cursor: grabbing;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+}
+
+/* Last move highlight */
+.chess-square.last-move {
+    background: var(--highlight-last, #cdd26a) !important;
+}
+
+/* ==========================================================================
+   LICHESS-STYLE BOARD HIGHLIGHTS
+   ========================================================================== */
+
+:root {
+    --highlight-selected: #829769;
+    --highlight-selected-dark: #646d40;
+    --highlight-last-light: #cdd26a;
+    --highlight-last-dark: #aaa23a;
+    --highlight-hint: #f7ec59;
+    --highlight-check: #e64c4c;
+    --highlight-premove: #9b59b6;
+}
+
+/* Selected piece square */
+.chess-square.selected.light {
+    background: var(--highlight-selected) !important;
+}
+
+.chess-square.selected.dark {
+    background: var(--highlight-selected-dark) !important;
+}
+
+/* Last move highlight */
+.chess-square.last-move.light {
+    background: var(--highlight-last-light) !important;
+}
+
+.chess-square.last-move.dark {
+    background: var(--highlight-last-dark) !important;
+}
+
+/* King in check */
+.chess-square.in-check {
+    background: radial-gradient(ellipse at center, 
+        var(--highlight-check) 0%, 
+        var(--highlight-check) 25%, 
+        rgba(230, 76, 76, 0) 90%) !important;
+}
+
+/* Valid move dot */
+.chess-square .move-dot {
+    width: 32%;
+    height: 32%;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.12);
+    pointer-events: none;
+}
+
+/* Valid capture ring (for squares with enemy pieces) */
+.chess-square.can-capture::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 50%;
+    border: 5px solid rgba(0, 0, 0, 0.12);
+    box-sizing: border-box;
+    pointer-events: none;
+}
+
+/* Hint circle around piece */
+.chess-square.hint-from {
+    position: relative;
+}
+
+.chess-square.hint-from::before {
+    content: '';
+    position: absolute;
+    top: 5%;
+    left: 5%;
+    right: 5%;
+    bottom: 5%;
+    border: 4px solid var(--highlight-hint);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: hint-pulse 1.5s ease-in-out infinite;
+    z-index: 10;
+}
+
+@keyframes hint-pulse {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); }
+}
+
+/* Wrong move shake */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-5px); }
+    40% { transform: translateX(5px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
+}
+
+.chess-square.shake .piece {
+    animation: shake 0.3s ease-in-out;
+}
+
+/* ==========================================================================
+   IMPROVED DRAG AND DROP
+   ========================================================================== */
+
+/* Ghost piece on original square during drag */
+.chess-square .piece.ghost {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+/* Dragged piece styling */
+.piece.dragging {
+    cursor: grabbing !important;
+    transform: scale(1.15);
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4))
+            drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    transition: transform 0.1s ease-out;
+    z-index: 1000;
+}
+
+/* Piece hover when not dragging */
+.chess-square .piece {
+    cursor: grab;
+    transition: transform 0.08s ease-out;
+}
+
+.chess-square .piece:hover {
+    transform: scale(1.05);
+}
+
+/* Square highlight when dragging over */
+.chess-square.drag-over {
+    box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.5);
+}
+
+.chess-square.drag-over.can-drop {
+    box-shadow: inset 0 0 0 3px rgba(130, 151, 105, 0.8);
+}

@@ -36,6 +36,13 @@ pub struct OpeningsTemplate {
 }
 
 #[derive(Template)]
+#[template(path = "training/puzzles.html")]
+pub struct PuzzlesTemplate {
+    pub title: String,
+    pub puzzle_count: usize,
+}
+
+#[derive(Template)]
 #[template(path = "training/index.html")]
 pub struct TrainingHubTemplate {
     pub streak: u32,
@@ -174,6 +181,55 @@ pub struct SaveSessionRequest {
     pub best_time_ms: Option<u64>,
 }
 
+#[derive(serde::Serialize)]
+pub struct PuzzleResponse {
+    pub id: i64,
+    pub fen: String,
+    pub best_move: String,
+    pub player_move: String,
+    pub severity: String,
+    pub cp_loss: Option<i32>,
+    pub game_id: i64,
+    pub move_number: u16,
+}
+
+pub async fn puzzles_trainer(
+    State(state): State<Arc<AppState>>,
+) -> impl IntoResponse {
+    let db = state.db.lock().unwrap();
+    let count = db.get_all_patterns().map(|p| p.len()).unwrap_or(0);
+    
+    let template = PuzzlesTemplate {
+        title: "Puzzle Training".to_string(),
+        puzzle_count: count,
+    };
+    Html(template.render().unwrap())
+}
+
+pub async fn get_puzzle(
+    State(state): State<Arc<AppState>>,
+) -> impl IntoResponse {
+    let db = state.db.lock().unwrap();
+    
+    match db.get_random_puzzle() {
+        Ok(Some(pattern)) => {
+            let response = PuzzleResponse {
+                id: pattern.id,
+                fen: pattern.position_fen,
+                best_move: pattern.best_move,
+                player_move: pattern.player_move,
+                severity: pattern.severity,
+                cp_loss: pattern.centipawn_loss,
+                game_id: pattern.game_id,
+                move_number: pattern.move_number,
+            };
+            Json(response).into_response()
+        }
+        Ok(None) => StatusCode::NOT_FOUND.into_response(),
+        Err(_) => StatusCode::INTERNAL_SERVER_ERROR.into_response(),
+    }
+}
+
 pub async fn save_session(
     State(state): State<Arc<AppState>>,
     Json(req): Json<SaveSessionRequest>,
@@ -189,5 +245,61 @@ pub async fn save_session(
     ) {
         Ok(_) => StatusCode::OK,
         Err(_) => StatusCode::INTERNAL_SERVER_ERROR,
+    }
+}
+
+// Continuation API - analyze position after correct move
+#[derive(serde::Serialize)]
+pub struct ContinuationResponse {
+    pub moves: Vec<String>,
+    pub eval: String,
+}
+
+pub async fn get_continuation(
+    State(state): State<Arc<AppState>>,
+    axum::extract::Path(puzzle_id): axum::extract::Path<i64>,
+) -> impl IntoResponse {
+    // Get the puzzle
+    let pattern = {
+        let db = state.db.lock().unwrap();
+        db.get_all_patterns()
+            .ok()
+            .and_then(|patterns| patterns.into_iter().find(|p| p.id == puzzle_id))
+    };
+    
+    let Some(pattern) = pattern else {
+        return StatusCode::NOT_FOUND.into_response();
+    };
+    
+    // Create position after the best move
+    let fen = &pattern.position_fen;
+    let best_move = &pattern.best_move;
+    
+    // Spawn blocking task for Stockfish
+    let fen = fen.clone();
+    let best_move = best_move.clone();
+    
+    let result = tokio::task::spawn_blocking(move || {
+        use chess_analyzer_core::engine::StockfishEngine;
+        
+        let mut engine = StockfishEngine::new("stockfish").ok()?;
+        
+        // Set position and make the best move
+        engine.set_position(Some(&fen), Some(&[best_move])).ok()?;
+        
+        // Analyze for continuation
+        let analysis = engine.analyze(16).ok()?;
+        engine.quit().ok();
+        
+        // Return principal variation (skip first move since that's opponent's response)
+        let moves: Vec<String> = analysis.pv.into_iter().take(4).collect();
+        let eval = format!("{}", analysis.evaluation);
+        
+        Some(ContinuationResponse { moves, eval })
+    }).await.ok().flatten();
+    
+    match result {
+        Some(continuation) => Json(continuation).into_response(),
+        None => StatusCode::INTERNAL_SERVER_ERROR.into_response(),
     }
 }

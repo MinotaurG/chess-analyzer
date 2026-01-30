@@ -1,0 +1,75 @@
+{% extends "../base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <a href="/train" class="back-link">< Back to Training</a>
+    <h1 class="page-title">Puzzle Training</h1>
+</div>
+
+<div class="grid grid-2">
+    <!-- Board Section -->
+    <div class="card">
+        <div id="puzzle-context" class="puzzle-context" style="margin-bottom: 1rem; color: var(--text-muted); font-size: 0.9rem;">
+            Loading puzzle...
+        </div>
+        
+        <div class="board-wrapper">
+            <div class="board-container">
+                <div id="chess-board" class="chess-board"></div>
+            </div>
+        </div>
+        
+        <div class="prompt-area">
+            <div id="prompt-text" class="prompt-text">Find the best move</div>
+            <div id="turn-indicator" class="prompt-target">White to move</div>
+            <div id="feedback" class="feedback"></div>
+        </div>
+        
+        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1rem;">
+            <button id="btn-hint" class="btn">Hint</button>
+            <button id="btn-next" class="btn" style="display: none;">Next Puzzle</button>
+        </div>
+    </div>
+    
+    <!-- Stats Section -->
+    <div>
+        <div class="card" style="margin-bottom: 1rem;">
+            <div class="card-header">
+                <span class="card-title">Session</span>
+                <button id="btn-reset" class="btn">Reset</button>
+            </div>
+            <div class="grid grid-3">
+                <div class="stat">
+                    <div id="stat-solved" class="stat-value">0</div>
+                    <div class="stat-label">Solved</div>
+                </div>
+                <div class="stat">
+                    <div id="stat-attempts" class="stat-value">0</div>
+                    <div class="stat-label">Attempts</div>
+                </div>
+                <div class="stat">
+                    <div id="stat-accuracy" class="stat-value">0%</div>
+                    <div class="stat-label">Accuracy</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Puzzle Info</span>
+            </div>
+            <div id="puzzle-info" style="color: var(--text-muted);">
+                <p><strong>Total puzzles:</strong> {{ puzzle_count }}</p>
+                <p id="info-severity"></p>
+                <p id="info-cp-loss"></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/puzzles.js"></script>
+{% endblock %}
